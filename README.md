@@ -7,8 +7,11 @@
 
 <h2>Maintainer Contact:</h2>
 
-![Matrix](https://img.shields.io/badge/Matrix--blue?style=social&logo=matrix&link=https%3A%2F%2Fmatrix.to%2F%23%2F%40zen2arc%3Amatrix.org)
-![Telegram](https://img.shields.io/badge/Telegram--blue?style=social&logo=telegram&link=https%3A%2F%2Ft.me%2Fzen2arc)
+![Matrix](https://img.shields.io/badge/Matrix--blue?style=social&logo=matrix&link=https%3A%2F%2Fmatrix.to%2F%23%2F%40zen2arc%3Amatrix.org)<br>
+@zen2arc:painfulcolour.dev
+
+![Telegram](https://img.shields.io/badge/Telegram--blue?style=social&logo=telegram&link=https%3A%2F%2Ft.me%2Fzen2arc)<br>
+@zen2arc
 
 <h2>About:</h2>
 
