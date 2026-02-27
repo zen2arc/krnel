@@ -44,61 +44,34 @@ We currently do not offer instructions for MacOS
 
 <h2>Structure:</h2>
 
-krnel/
-
-├── kernel/
-
-│ ├── ata.c
-
-│ ├── kernel.c
-
-│ ├── shell.c
-
-│ ├── ext2.c
-
-│ ├── process.c
-
-│ ├── history.c
-
-│ ├── memory.c
-
-│ ├── fs.c
-
-│ ├── keyboard.c
-
-│ ├── kittywrite.c
-
-│ ├── plugin.c
-
-│ ├── vga.c
-
-│ ├── stackcheck.c
-
-│ ├── sysfetch.c
-
-│ ├── user.c
-
-├── boot/
-
-│ ├── boot.asm
-
-│ ├── linker.ld
-
-├── include/
-
-│ ├── ata.h
-
-│ ├── ext2.h
-
-│ ├── ext2_private.h
-
-│ ├── kernel.h
-
-│ └── plugin.h
-
-├── Makefile
-
-└── grub.cfg
+krnel/<br>
+├── kernel/<br>
+│ ├── ata.c<br>
+│ ├── kernel.c<br>
+│ ├── shell.c<br>
+│ ├── ext2.c<br>
+│ ├── process.c<br>
+│ ├── history.c<br>
+│ ├── memory.c<br>
+│ ├── fs.c<br>
+│ ├── keyboard.c<br>
+│ ├── kittywrite.c<br>
+│ ├── plugin.c<br>
+│ ├── vga.c<br>
+│ ├── stackcheck.c<br>
+│ ├── sysfetch.c<br>
+│ ├── user.c<br>
+├── boot/<br>
+│ ├── boot.asm<br>
+│ ├── linker.ld<br>
+├── include/<br>
+│ ├── ata.h<br>
+│ ├── ext2.h<br>
+│ ├── ext2_private.h<br>
+│ ├── kernel.h<br>
+│ └── plugin.h<br>
+├── Makefile<br>
+└── grub.cfg<br>
 
 <h2>LICENSE</h2>
 
