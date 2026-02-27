@@ -11,9 +11,9 @@
 
 <h2>About:</h2>
 
-kTTY (formerly krnel) is a basic x86 kernel/OS written in C, includes basic plugin support for kernel extensions.
+kTTY (formerly krnel) is a basic UNIX-like x86 kernel/OS written in C, includes basic plugin support for kernel extensions.
 
-Shell is 
+Shell currently SHOULD support bash scripts.
 
 <h2>Building:</h2>
 
