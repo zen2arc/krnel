@@ -1,7 +1,8 @@
-# krnel
+# kTTY/krnel
 ![License: GNU GPL v3](https://img.shields.io/badge/License-gpl3.0-blue.svg)
+![Build](https://img.shields.io/badge/Build-Failing-e91515?style=flat)
 
-A basic X86 kernel written in C with support for plugins.
+kTTY (formerly krnel) is a basic kernel/OS written in C, includes basic plugin support for kernel extensions.
 
 
 Made with Zed
