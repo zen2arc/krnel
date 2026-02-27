@@ -3,6 +3,7 @@
 ![Name](https://img.shields.io/badge/zen2arc-krnel-blue?style=flat-square&logo=github)
 ![License](https://img.shields.io/badge/License-GNU%20GPL%20v3-blue?style=flat-square)
 ![Build](https://img.shields.io/badge/Build-Passing-green?style=flat-square)
+![Stability](https://img.shields.io/badge/Running-Unstable-orange?style=flat-square)
 ![Zed](https://img.shields.io/badge/Made%20with%20Zed--blue?style=flat-square&logo=zedindustries)
 
 <h2>Maintainer Contact:</h2>
@@ -31,7 +32,7 @@ This piece of ***almost*** useless software includes a pretty straight-forward a
     1. NASM
     2. GCC
     3. GRUB
-    4. xorriso (for iso creation only)
+    4. xorriso
 4. After you downloaded and installed all dependencies, you could start building by just entering ``make`` into your terminal, its that easy!
 
 <h3>Linux:</h3>
