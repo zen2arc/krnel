@@ -6,14 +6,6 @@
 ![Stability](https://img.shields.io/badge/Running-Unstable-orange?style=flat-square)
 ![Zed](https://img.shields.io/badge/Made%20with%20Zed--blue?style=flat-square&logo=zedindustries)
 
-<h2>Maintainer Contact:</h2>
-
-![Matrix](https://img.shields.io/badge/Matrix--blue?style=social&logo=matrix&link=https%3A%2F%2Fmatrix.to%2F%23%2F%40zen2arc%3Amatrix.org)<br>
-@zen2arc:painfulcolour.dev
-
-![Telegram](https://img.shields.io/badge/Telegram--blue?style=social&logo=telegram&link=https%3A%2F%2Ft.me%2Fzen2arc)<br>
-@zen2arc
-
 <h2>About:</h2>
 
 kTTY (formerly krnel) is a basic UNIX-like x86 kernel/OS written in C, includes basic plugin support for kernel extensions.
