@@ -9,13 +9,13 @@ ISO_DIR = iso
 
 CC = gcc
 AS = nasm
-LD = ld
+LD = gcc
 GRUB = grub-mkrescue
 
 CFLAGS = -m32 -ffreestanding -fno-stack-protector -fno-pic -fno-PIE \
          -Wall -Wextra -I$(INC) -nostdlib -O0 -g
 ASFLAGS = -f elf32
-LDFLAGS = -m elf_i386 -nostdlib -T boot/linker.ld -z noexecstack
+LDFLAGS = -m32 -ffreestanding -nostdlib -T boot/linker.ld -z noexecstack -lgcc
 
 C_SOURCES = $(SRC)/kernel.c \
             $(SRC)/memory.c \

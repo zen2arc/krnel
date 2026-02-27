@@ -1,5 +1,7 @@
 #include "kernel.h"
 
+u32 system_uptime = 0;
+
 __attribute__((force_align_arg_pointer))
 void kmain(unsigned int magic, unsigned int mb_info_addr) {
     (void)magic;

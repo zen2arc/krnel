@@ -280,7 +280,7 @@ void execute_command(char* line) {
     }
     else if (strcmp(args[0], "sysfetch") == 0) {
         extern void sysfetch_run(void);
-        sysfetch_run();
+        // sysfetch_run();
     }
     else if (strcmp(args[0], "kittywrite") == 0) {
         if (arg_count < 2) vga_write("Usage: kittywrite <file>\n", 0x04);

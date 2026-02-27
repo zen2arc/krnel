@@ -1,5 +1,7 @@
 #include "kernel.h"
 
+extern u32 system_uptime;
+
 #define MAX_PROCESSES 32
 #define PROCESS_STACK_SIZE 4096
 #define TIME_SLICE 10
