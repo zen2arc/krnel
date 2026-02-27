@@ -38,9 +38,9 @@ This piece of ***almost*** useless software includes a pretty straight-forward a
 
 The literal same as Windows, but without WSL obviously.
 
-<h3>macOS:</h3>
+<h3>MacOS:</h3>
 
-Hell nah.
+We currently do not offer instructions for MacOS
 
 <h2>Structure:</h2>
 
