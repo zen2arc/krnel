@@ -45,32 +45,59 @@ We currently do not offer instructions for MacOS
 <h2>Structure:</h2>
 
 krnel/
+
 ├── kernel/
+
 │ ├── ata.c
+
 │ ├── kernel.c
+
 │ ├── shell.c
+
 │ ├── ext2.c
+
 │ ├── process.c
+
 │ ├── history.c
+
 │ ├── memory.c
+
 │ ├── fs.c
+
 │ ├── keyboard.c
+
 │ ├── kittywrite.c
+
 │ ├── plugin.c
+
 │ ├── vga.c
+
 │ ├── stackcheck.c
+
 │ ├── sysfetch.c
+
 │ ├── user.c
+
 ├── boot/
+
 │ ├── boot.asm
+
 │ ├── linker.ld
+
 ├── include/
+
 │ ├── ata.h
+
 │ ├── ext2.h
+
 │ ├── ext2_private.h
+
 │ ├── kernel.h
+
 │ └── plugin.h
+
 ├── Makefile
+
 └── grub.cfg
 
 <h2>LICENSE</h2>
