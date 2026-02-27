@@ -51,10 +51,7 @@ krnel.img:
 
 disk: krnel.img
 
-run: $(BUILD)/$(ISO)
-	qemu-system-x86_64 -cdrom "$(BUILD)/$(ISO)" -m 512M -serial stdio -boot d
-
-run-full: $(BUILD)/$(ISO) krnel.img
+run: $(BUILD)/$(ISO) krnel.img
 	qemu-system-x86_64 -cdrom "$(BUILD)/$(ISO)" -m 512M -serial stdio \
 	-drive file=krnel.img,format=raw,if=ide,index=0,media=disk -boot d
 
@@ -88,4 +85,4 @@ clean:
 	rm -rf $(BUILD) $(ISO_DIR) krnel.img
 	@echo "✓ Cleaned everything"
 
-.PHONY: all iso run run-full disk clean
+.PHONY: all iso run disk clean
