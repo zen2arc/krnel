@@ -2,7 +2,7 @@
 
 ![Name](https://img.shields.io/badge/zen2arc-krnel-blue?style=flat-square&logo=github)
 ![License](https://img.shields.io/badge/License-GNU%20GPL%20v3-blue?style=flat-square)
-![Build](https://img.shields.io/badge/Build-Failing-red?style=flat-square)
+![Build](https://img.shields.io/badge/Build-Passing-green?style=flat-square)
 ![Zed](https://img.shields.io/badge/Made%20with%20Zed--blue?style=flat-square&logo=zedindustries)
 
 <h2>Maintainer Contact:</h2>
