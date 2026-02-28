@@ -5,7 +5,6 @@ SECTIONS
 {
     . = 1M;
 
-    /* multiboot header MUST be at the beginning, okay? */
     .text BLOCK(4K) : ALIGN(4K)
     {
         *(.multiboot)
@@ -32,7 +31,14 @@ SECTIONS
         *(.bss.*)
     }
 
-    /* discord?? */
+    .stack : ALIGN(16)
+    {
+        . = ALIGN(16);
+        *(.stack)
+    }
+
+    _end = .;
+
     /DISCARD/ :
     {
         *(.comment)
