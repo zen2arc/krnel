@@ -12,6 +12,8 @@ kTTY (formerly krnel) is a basic UNIX-like x86 kernel/OS written in C, includes 
 
 Shell currently SHOULD support bash scripts.
 
+kitty! cats!
+
 <h2>Building:</h2>
 
 This piece of ***almost*** useless software includes a pretty straight-forward and beginner friendly method of building, make. You could choose the hard way and build manually, but you will have to figure it out yourself, i am not providing any tutorials for manual building.
