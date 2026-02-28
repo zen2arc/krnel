@@ -36,6 +36,11 @@ typedef size_t usize;
 #define COLOUR_YELLOW          0x0E
 #define COLOUR_WHITE           0x0F
 
+#define COLOUR_DEBUG_INFO           COLOUR_MAGENTA
+#define COLOUR_DEBUG_ERROR          COLOUR_LIGHT_RED
+#define COLOUR_DEBUG_FATAL_ERROR    COLOUR_RED
+
+
 struct ata_disk_s;
 typedef struct ata_disk_s ata_disk_t;
 

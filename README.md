@@ -31,7 +31,17 @@ This piece of ***almost*** useless software includes a pretty straight-forward a
 
 <h3>Linux:</h3>
 
-The literal same as Windows, but without WSL obviously.
+Similar to Windows, but without WSL obviously.
+
+Arch Linux:
+``
+sudo pacman -S --needed nasm gcc grub libisoburn qemu-base qemu-desktop
+``
+
+Debian:
+``
+sudo apt install nasm gcc grub-common qemu-system-x86 qemu-utils
+``
 
 <h3>MacOS:</h3>
 

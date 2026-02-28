@@ -33,7 +33,7 @@ int ext2_mount(ata_disk_t* disk, u32 partition_start, ext2_fs_t** out_fs) {
     fs->partition_start = partition_start;
     u8 sb_buf[1024];
     if (ata_read_sectors(disk, partition_start + 2, 2, sb_buf) != 1024) {
-        vga_write("failed to mount! ata_read_sectors\n", COLOUR_LIGHT_RED);
+        vga_write("failed to mount! ata_read_sectors\n", COLOUR_DEBUG_ERROR);
         kfree(fs);
         return -1;
     }
@@ -41,7 +41,7 @@ int ext2_mount(ata_disk_t* disk, u32 partition_start, ext2_fs_t** out_fs) {
     if (fs->sb.magic != EXT2_SUPER_MAGIC) {
         if (ext2_format(disk, partition_start, 0) != 0) {
             kfree(fs);
-            vga_write("failed to mount! ext2_format(disk, partition_start, 0) != 0\n", COLOUR_LIGHT_RED);
+            vga_write("failed to mount! ext2_format(disk, partition_start, 0) != 0\n", COLOUR_DEBUG_ERROR);
             return -1;
         }
         ata_read_sectors(disk, partition_start + 2, 2, sb_buf);
@@ -53,13 +53,17 @@ int ext2_mount(ata_disk_t* disk, u32 partition_start, ext2_fs_t** out_fs) {
     fs->num_groups = (fs->sb.blocks_count + fs->sb.blocks_per_group - 1) / fs->sb.blocks_per_group;
     u32 bgdt_block = (fs->block_size == 1024) ? 2 : 1;
     u32 bgdt_bytes = fs->num_groups * sizeof(ext2_bgdesc_t);
-    char buffer[16];  // enough for 32-bit unsigned int
+    
+    char buffer[16];
     snprintf(buffer, sizeof(buffer), "%i", bgdt_bytes);
-    vga_write(buffer, COLOUR_LIGHT_RED);
+    vga_write("allocating ", COLOUR_DEBUG_INFO);
+    vga_write(buffer, COLOUR_DEBUG_INFO);
+    vga_write(" for bgdt\n", COLOUR_DEBUG_INFO);
+    
     fs->bgdt = kmalloc(bgdt_bytes);
     if (!fs->bgdt) {
         kfree(fs);
-        vga_write("failed to mount! !fs->bgdt\n", COLOUR_LIGHT_RED);
+        vga_write("failed to mount: !fs->bgdt (failed bgdt kmalloc)\n", COLOUR_DEBUG_ERROR);
         return -1;
     }
     u32 bgdt_blocks = (bgdt_bytes + fs->block_size - 1) / fs->block_size;

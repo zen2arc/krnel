@@ -20,7 +20,7 @@ void mem_init(void) {
 
 void* kmalloc(usize size) {
     if (size == 0 || heap_start == NULL) {
-        vga_write("kmalloc failed: size == 0 || heap_start == NULL\n", COLOUR_LIGHT_RED);
+        vga_write("kmalloc failed: size == 0 || heap_start == NULL\n", COLOUR_DEBUG_ERROR);
 
         return NULL;
     }
