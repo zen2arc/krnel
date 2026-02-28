@@ -19,6 +19,23 @@ typedef size_t usize;
 #define MAX_USERNAME 32
 #define MAX_PASSWORD 32
 
+#define COLOUR_BLACK           0x00
+#define COLOUR_BLUE            0x01
+#define COLOUR_GREEN           0x02
+#define COLOUR_CYAN            0x03
+#define COLOUR_RED             0x04
+#define COLOUR_MAGENTA         0x05
+#define COLOUR_BROWN           0x06
+#define COLOUR_LIGHT_GRAY      0x07
+#define COLOUR_DARK_GRAY       0x08
+#define COLOUR_LIGHT_BLUE      0x09
+#define COLOUR_LIGHT_GREEN     0x0A
+#define COLOUR_LIGHT_CYAN      0x0B
+#define COLOUR_LIGHT_RED       0x0C
+#define COLOUR_LIGHT_MAGENTA   0x0D
+#define COLOUR_YELLOW          0x0E
+#define COLOUR_WHITE           0x0F
+
 struct ata_disk_s;
 typedef struct ata_disk_s ata_disk_t;
 
@@ -27,6 +44,11 @@ typedef struct ext2_fs_s ext2_fs_t;
 
 void kmain(unsigned int magic, unsigned int mb_info_addr);
 
+static inline void khang() {
+    while (1) {
+        __asm__ volatile ("hlt");
+    }
+}
 /* ================ VGA functions ================ */
 void clear_screen(void);
 void vga_write(const char* str, u8 color);

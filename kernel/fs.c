@@ -17,7 +17,10 @@ void fs_init(void) {
     if (ext2_mount(disk, 0, &fs) != 0) {
         vga_write("formatting disk...\n", 0x0E);
         ext2_format(disk, 0, 131072);
-        ext2_mount(disk, 0, &fs);
+        if (ext2_mount(disk, 0, &fs) != 0) {
+            vga_write("failed to mount! stopping.\n", COLOUR_RED);
+            khang();
+        }
     }
     ext2_mkdir(fs, 2, "bin");
     ext2_mkdir(fs, 2, "home");
