@@ -3,6 +3,7 @@
 ![Name](https://img.shields.io/badge/zen2arc-krnel-blue?style=flat-square&logo=github)
 ![License](https://img.shields.io/badge/License-GNU%20GPL%20v3-blue?style=flat-square)
 ![Build](https://img.shields.io/badge/Build-Passing-green?style=flat-square)
+![Stability](https://img.shields.io/badge/Running-Stable-green?style=flat-square)
 ![Zed](https://img.shields.io/badge/Made%20with%20Zed--blue?style=flat-square&logo=zedindustries)
 
 <h2>About:</h2>
