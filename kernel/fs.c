@@ -11,14 +11,14 @@ void fs_init(void) {
     ata_init();
     ata_disk_t* disk = ata_get_primary();
     if (!disk) {
-        vga_write("no disk, ram fallback\n", 0x04);
+        vga_write("no disk, ram fallback\n", COLOUR_LIGHT_RED);
         return;
     }
     if (ext2_mount(disk, 0, &fs) != 0) {
-        vga_write("formatting disk...\n", 0x0E);
+        vga_write("formatting disk...\n", COLOUR_YELLOW);
         ext2_format(disk, 0, 131072);
         if (ext2_mount(disk, 0, &fs) != 0) {
-            vga_write("failed to mount! stopping.\n", COLOUR_RED);
+            vga_write("failed to mount! stopping.\n", COLOUR_DEBUG_FATAL_ERROR);
             khang();
         }
     }
