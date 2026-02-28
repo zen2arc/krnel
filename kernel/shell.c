@@ -14,9 +14,11 @@ typedef struct {
 static alias_t aliases[MAX_ALIASES];
 static int alias_count = 0;
 
+// login state
 static int logged_in = 0;
 static char line[BUFFER_SIZE];
 
+// read a single character from keyboard
 static char read_char(void) {
     while (1) {
         int c = read_key();
@@ -25,6 +27,7 @@ static char read_char(void) {
     }
 }
 
+// read a string from keyboard with optional echo
 static void read_string(char* buffer, int max_len, int show_chars) {
     int pos = 0;
     while (1) {
@@ -50,71 +53,82 @@ static void read_string(char* buffer, int max_len, int show_chars) {
     }
 }
 
+// first boot setup: create root and normal user
 static void first_boot_setup(void) {
-    vga_write("It looks like this is your first time booting.\n", 0x0F);
-    vga_write("Let's set up your system accounts.\n\n", 0x0F);
+    clear_screen();
+    vga_write("first boot detected\n", 0x0E);
+    vga_write("please set up system accounts\n\n", 0x0F);
 
-    vga_write("=== STEP 1: Set root password ===\n", 0x0F);
-    vga_write("Username: root\n", 0x0F);
+    // create root user
     char root_password[MAX_PASSWORD];
-    vga_write("Enter password for root: ", 0x0F);
-    read_string(root_password, MAX_PASSWORD, 0);
-    vga_write("\nCreating root account...\n", 0x0F);
-    if (user_add("root", root_password, 1) == 0)
-        vga_write("✓ Root account created successfully!\n\n", 0x0A);
-    else
-        vga_write("✗ Failed to create root account.\n\n", 0x04);
+    while (1) {
+        vga_write("set root password: ", 0x0F);
+        read_string(root_password, MAX_PASSWORD, 0);
+        if (strlen(root_password) > 0) break;
+        vga_write("password cannot be empty\n", 0x04);
+    }
+    user_add("root", root_password, 1);
+    vga_write("root account created\n", 0x0A);
 
-    vga_write("=== STEP 2: Create normal user account ===\n", 0x0F);
+    // create normal user
     char username[MAX_USERNAME];
     char password[MAX_PASSWORD];
-    vga_write("Enter username: ", 0x0F);
-    read_string(username, MAX_USERNAME, 1);
-    vga_write("Enter password: ", 0x0F);
-    read_string(password, MAX_PASSWORD, 0);
-    vga_write("\nCreating user account...\n", 0x0F);
-    if (user_add(username, password, 0) == 0) {
-        vga_write("✓ User account '", 0x0F);
-        vga_write(username, 0x0E);
-        vga_write("' created successfully!\n\n", 0x0F);
-    } else {
-        vga_write("✗ Failed to create user account.\n\n", 0x04);
+    while (1) {
+        vga_write("create a normal user\n", 0x0F);
+        vga_write("username: ", 0x0F);
+        read_string(username, MAX_USERNAME, 1);
+        vga_write("password: ", 0x0F);
+        read_string(password, MAX_PASSWORD, 0);
+        if (strlen(username) == 0 || strlen(password) == 0) {
+            vga_write("username and password cannot be blank\n", 0x04);
+        } else if (user_add(username, password, 0) == 0) {
+            vga_write("user created successfully\n\n", 0x0A);
+            break;
+        } else {
+            vga_write("failed to create user, try again\n", 0x04);
+        }
     }
 
-    vga_write("Setup successful!\n", 0x0A);
-    vga_write("Please login with your normal user account.\n\n", 0x0F);
+    vga_write("setup complete! please login\n\n", 0x0A);
 }
 
 static void login_prompt(void) {
+    clear_screen();
     char username[MAX_USERNAME];
     char password[MAX_PASSWORD];
     int attempts = 0;
-    vga_write("KRNEL login\n", 0x0E);
+
     while (attempts < 3) {
-        vga_write("login: ", 0x0A);
+        vga_write("kTTY 1.0.0rc1 tty1\n", 0x0F);
+        vga_write("login: ", 0x0F);
         read_string(username, MAX_USERNAME, 1);
-        vga_write("password: ", 0x0A);
+        vga_write("password: ", 0x0F);
         read_string(password, MAX_PASSWORD, 0);
+
         if (user_login(username, password) == 0) {
-            vga_write("\nLogin successful!\n", 0x0A);
+            vga_write("\nlogin successful!\n", 0x0F);
             logged_in = 1;
+            clear_screen();
             return;
         } else {
-            vga_write("\nLogin failed: Invalid username or password\n", 0x04);
+            clear_screen();
+            vga_write("\nlogin failed: invalid username or password\n", 0x04);
             attempts++;
         }
     }
-    vga_write("\nToo many failed attempts. System halted.\n", 0x04);
+    vga_write("\ntoo many failed attempts. system halted.\n", 0x04);
     while (1);
 }
 
+// shell prompt
 static void prompt(void) {
     vga_write(user_get_name(), 0x0A);
     vga_write("@kTTY ", 0x0F);
     vga_write(fs_getcwd(), 0x0B);
-    vga_write(" % ", 0x0F);
+    vga_write(" $ ", 0x0F);
 }
 
+// parse command line into arguments
 static void parse_command(char* line) {
     arg_count = 0;
     char* token = strtok(line, " \t\n");
@@ -125,15 +139,17 @@ static void parse_command(char* line) {
     args[arg_count] = NULL;
 }
 
+// alias expansion
 static char* expand_alias(const char* cmd) {
     for (int i = 0; i < alias_count; i++)
         if (strcmp(aliases[i].name, cmd) == 0) return aliases[i].value;
     return NULL;
 }
 
+// add alias
 static void add_alias(const char* name, const char* value) {
     if (alias_count >= MAX_ALIASES) {
-        vga_write("Too many aliases\n", 0x04);
+        vga_write("too many aliases\n", 0x04);
         return;
     }
     for (int i = 0; i < alias_count; i++)
@@ -146,8 +162,9 @@ static void add_alias(const char* name, const char* value) {
     alias_count++;
 }
 
+// list aliases
 static void list_aliases(void) {
-    vga_write("Aliases:\n", 0x0F);
+    vga_write("aliases:\n", 0x0F);
     for (int i = 0; i < alias_count; i++) {
         char line[100];
         snprintf(line, sizeof(line), "%s='%s'\n", aliases[i].name, aliases[i].value);
@@ -155,6 +172,7 @@ static void list_aliases(void) {
     }
 }
 
+// change directory
 static void change_directory(char* path) {
     if (!path || strlen(path) == 0) {
         fs_chdir(user_get_home());
@@ -165,14 +183,16 @@ static void change_directory(char* path) {
     }
 }
 
+// list directory contents
 static void list_directory(void) {
     char buffer[4096];
     if (fs_list(buffer, sizeof(buffer)) > 0)
         vga_write(buffer, 0x0F);
     else
-        vga_write("Directory is empty\n", 0x08);
+        vga_write("directory is empty\n", 0x08);
 }
 
+// display a file
 static void display_file(const char* filename) {
     char buffer[4096];
     int size = fs_read(filename, buffer, sizeof(buffer)-1);
@@ -187,6 +207,7 @@ static void display_file(const char* filename) {
     if (size > 0 && buffer[size-1] != '\n') vga_write("\n", 0x0F);
 }
 
+// create a file
 static void create_file(const char* filename) {
     if (fs_exists(filename)) {
         char error[50];
@@ -201,6 +222,7 @@ static void create_file(const char* filename) {
     }
 }
 
+// remove a file
 static void remove_file(const char* filename) {
     if (fs_delete(filename) != 0) {
         char error[50];
@@ -209,6 +231,7 @@ static void remove_file(const char* filename) {
     }
 }
 
+// make a directory
 static void make_directory(const char* dirname) {
     if (fs_exists(dirname)) {
         char error[50];
@@ -220,6 +243,7 @@ static void make_directory(const char* dirname) {
         vga_write("mkdir: Failed to create directory\n", 0x04);
 }
 
+// echo command (output arguments)
 static void echo_command(void) {
     for (int i = 1; i < arg_count; i++) {
         vga_write(args[i], 0x0F);
@@ -228,14 +252,16 @@ static void echo_command(void) {
     vga_write("\n", 0x0F);
 }
 
+// show help for commands
 static void show_help(void) {
-    vga_write("Built-in commands:\n", 0x0E);
+    vga_write("built-in commands:\n", 0x0E);
     vga_write(" cd [dir]   ls   cat <file>   touch <file>   rm <file>\n", 0x0F);
     vga_write(" mkdir <dir>   rmdir <dir>   echo [text]   clear   help\n", 0x0F);
     vga_write(" history   alias   pwd   whoami   ps   sysfetch   exit\n", 0x0F);
     vga_write(" ./script.sh   kittywrite <file>\n", 0x0F);
 }
 
+// execute a command
 void execute_command(char* line) {
     if (!line || strlen(line) == 0) return;
     history_add(line);
@@ -251,6 +277,7 @@ void execute_command(char* line) {
     parse_command(line);
     if (arg_count == 0) return;
 
+    // built-in commands
     if (strcmp(args[0], "cd") == 0) change_directory(arg_count > 1 ? args[1] : NULL);
     else if (strcmp(args[0], "ls") == 0) list_directory();
     else if (strcmp(args[0], "cat") == 0) display_file(args[1]);
@@ -280,14 +307,14 @@ void execute_command(char* line) {
     }
     else if (strcmp(args[0], "sysfetch") == 0) {
         extern void sysfetch_run(void);
-        // sysfetch_run();
+        sysfetch_run();
     }
     else if (strcmp(args[0], "kittywrite") == 0) {
-        if (arg_count < 2) vga_write("Usage: kittywrite <file>\n", 0x04);
+        if (arg_count < 2) vga_write("usage: kittywrite <file>\n", 0x04);
         else kittywrite(args[1]);
     }
     else if (strcmp(args[0], "exit") == 0 || strcmp(args[0], "logout") == 0) {
-        vga_write("Logging out...\n", 0x08);
+        vga_write("logging out...\n", 0x08);
         user_logout();
         clear_screen();
         logged_in = 0;
@@ -299,20 +326,20 @@ void execute_command(char* line) {
     }
 }
 
+// initialize shell
 void shell_init(void) {
     add_alias("ll", "ls");
     add_alias("..", "cd ..");
     add_alias("~", "cd /");
 
-    if (user_first_boot()) {
-        first_boot_setup();
-    }
+    // run first boot setup if needed
+    if (user_first_boot()) first_boot_setup();
 
-    while (!logged_in) {
-        login_prompt();
-    }
+    // login loop
+    while (!logged_in) login_prompt();
 }
 
+// run shell
 void shell_run(void) {
     while (logged_in) {
         prompt();
