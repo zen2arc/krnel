@@ -318,6 +318,7 @@ void execute_command(char* line) {
         user_logout();
         clear_screen();
         logged_in = 0;
+        login_prompt();
     }
     else {
         char error[50];
