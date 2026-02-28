@@ -81,6 +81,10 @@ $(BUILD)/%.o: boot/%.asm
 	$(AS) $(ASFLAGS) $< -o $@
 	@echo " AS $<"
 
+remove-disk:
+	rm -f krnel.img
+	@echo "✓ Disk image removed (krnel.img)"
+
 clean:
 	rm -rf $(BUILD) $(ISO_DIR) krnel.img
 	@echo "✓ Cleaned everything"
