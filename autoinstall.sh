@@ -1,7 +1,4 @@
 #!/bin/bash
 set -e
 
-make
-make iso
-make disk
-make run
+make run -j $(nproc)
