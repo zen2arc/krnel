@@ -54,9 +54,11 @@ static inline void khang() {
         __asm__ volatile ("hlt");
     }
 }
+
 /* ================ VGA functions ================ */
 void clear_screen(void);
 void vga_write(const char* str, u8 color);
+void vga_write_rgb(const char* str, u8 r, u8 g, u8 b);  // <- added
 void vga_set_pos(int x, int y);
 void vga_get_pos(int* x, int* y);
 void putchar(char c, u8 color);
@@ -213,5 +215,8 @@ extern u32 system_uptime;
 
 /* ================ Plugin system ================ */
 #include "plugin.h"
+
+/* ================ System Info / Sysfetch ================ */
+void sysfetch_run(void);
 
 #endif /* KERNEL_H */
