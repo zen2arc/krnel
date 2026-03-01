@@ -18,20 +18,7 @@ kitty! cats!
 
 This piece of ***almost*** useless software includes a pretty straight-forward and beginner friendly method of building, make. You could choose the hard way and build manually, but you will have to figure it out yourself, i am not providing any tutorials for manual building.
 
-<h3>Windows:</h3>
-
-1. Install WSL using PowerShell using ``wsl --install``
-2. Now, install your preferred distribution from Microsoft Store or manually.
-3. Finally, we've got to the dependencies. They are pretty minimal
-    1. NASM
-    2. GCC
-    3. GRUB
-    4. xorriso
-4. After you downloaded and installed all dependencies, you could start building by just entering ``make`` into your terminal, its that easy!
-
-<h3>Linux:</h3>
-
-Similar to Windows, but without WSL obviously.
+For build instructions, visit the wiki. All instructions will be removed from the readme soon and moved to the wiki.
 
 Arch Linux:
 ``
