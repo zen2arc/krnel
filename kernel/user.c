@@ -53,7 +53,7 @@ static void users_save(void) {
 void user_init(void) {
     users_load();
     if (first_boot) {
-        if (!fs_exists("/etc")) fs_mkdir("/etc");
+        if (!fs_exists("etc")) fs_mkdir("etc");
         user_count = 0;
     }
 }
@@ -73,7 +73,11 @@ int user_add(const char* username, const char* password, u8 is_root) {
     users[user_count].uid = uid;
     users[user_count].gid = uid;
     users[user_count].is_root = is_root;
-    snprintf(users[user_count].home, sizeof(users[user_count].home), "/home/%s", username);
+    if (is_root) {
+        strcpy(users[user_count].home, "/");
+    } else {
+        snprintf(users[user_count].home, sizeof(users[user_count].home), "/home/%s", username);
+    }
     strcpy(users[user_count].shell, "/bin/ash");
 
     if (fs_create_home(username) < 0) {

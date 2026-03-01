@@ -40,9 +40,48 @@ int fs_delete(const char* name) {
 }
 
 int fs_list(char* buffer, usize size) {
-    (void)buffer;
-    (void)size;
-    return -1;
+    if (!fs || !buffer || size < 2) return -1;
+
+    ext2_inode_t dir;
+    if (ext2_read_inode(fs, cwd_inode, &dir) != 0)
+        return -1;
+
+    char* p = buffer;
+    usize left = size - 1;
+    int entries = 0;
+
+    u8 blk[1024];
+
+    for (int i = 0; i < 12 && dir.block[i]; ++i) {
+        if (ext2_read_block(fs, dir.block[i], blk) <= 0)
+            continue;
+
+        u32 off = 0;
+        while (off < 1024) {
+            ext2_dirent_t* de = (ext2_dirent_t*)(blk + off);
+            if (de->inode == 0 || de->rec_len == 0) break;
+
+            if ((de->name_len == 1 && de->name[0] == '.') ||
+                (de->name_len == 2 && de->name[0] == '.' && de->name[1] == '.')) {
+                off += de->rec_len;
+                continue;
+            }
+
+            usize namelen = de->name_len;
+            if (namelen + 1 >= left) break;
+
+            memcpy(p, de->name, namelen);
+            p[namelen] = '\n';
+            p += namelen + 1;
+            left -= namelen + 1;
+            entries++;
+
+            off += de->rec_len;
+        }
+    }
+
+    *p = '\0';
+    return (entries > 0) ? (int)(p - buffer) : 0;
 }
 
 int fs_read(const char* name, char* buffer, usize size) {
@@ -73,7 +112,16 @@ int fs_write(const char* name, const char* data, usize size) {
 }
 
 int fs_chdir(const char* dir) {
+    if (!dir || !*dir) return -1;
+
     if (strcmp(dir, "/") == 0) {
+        cwd_inode = 2;
+        strcpy(cwd, "/");
+        return 0;
+    }
+
+    if (strcmp(dir, "..") == 0) {
+        if (cwd_inode == 2) return 0;
         cwd_inode = 2;
         strcpy(cwd, "/");
         return 0;
@@ -84,10 +132,10 @@ int fs_chdir(const char* dir) {
 
     ext2_inode_t inode;
     if (ext2_read_inode(fs, inode_num, &inode) < 0) return -1;
-
     if (!(inode.mode & EXT2_S_IFDIR)) return -1;
 
     cwd_inode = inode_num;
+
     if (strcmp(cwd, "/") == 0) {
         strcpy(cwd, "/");
         strcat(cwd, dir);
@@ -127,22 +175,17 @@ int fs_type(const char* name) {
 }
 
 int fs_create_home(const char* username) {
-    char home_path[64] = "/home/";
-    strcat(home_path, username);
+    if (!username || strcmp(username, "root") == 0)
+        return 0;
 
-    int old_cwd = cwd_inode;
-    char old_cwd_str[64];
-    strcpy(old_cwd_str, cwd);
+    if (ext2_find_inode(fs, 2, "home", NULL) <= 0) {
+        ext2_mkdir(fs, 2, "home");
+    }
 
-    cwd_inode = 2;
-    strcpy(cwd, "/");
+    int home_inode = ext2_find_inode(fs, 2, "home", NULL);
+    if (home_inode <= 0) return -1;
 
-    int result = ext2_mkdir(fs, cwd_inode, username);
-
-    cwd_inode = old_cwd;
-    strcpy(cwd, old_cwd_str);
-
-    return result;
+    return ext2_mkdir(fs, home_inode, username);
 }
 
 int fs_mount_disk(void) {
