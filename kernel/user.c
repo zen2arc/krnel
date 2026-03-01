@@ -51,11 +51,9 @@ static void users_save(void) {
 }
 
 void user_init(void) {
+    if (!fs_exists("/etc")) fs_mkdir("/etc");
     users_load();
-    if (first_boot) {
-        if (!fs_exists("etc")) fs_mkdir("etc");
-        user_count = 0;
-    }
+    if (first_boot) user_count = 0;
 }
 
 int user_first_boot(void) {
