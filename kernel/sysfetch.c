@@ -30,7 +30,7 @@ void sysfetch_run(void) {
     vga_write("OS:      kTTY (32-bit)\n", 0x0F);
     vga_write("Kernel:  krnel\n", 0x0F);
     vga_write("Kernel version:  v0.3\n", 0x0F);
-    vga_write("Version: v1.0.0rc1\n", 0x0F);
+    vga_write("Version: v1.0.0rc2\n", 0x0F);
     vga_write("Uptime:  ", 0x0F);
     char buf[16];
     itoa(system_uptime / 100, buf);
