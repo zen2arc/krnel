@@ -10,7 +10,7 @@
 
 kTTY (formerly krnel) is a basic UNIX-like x86 kernel/OS written in C, includes basic plugin support for kernel extensions.
 
-Shell currently SHOULD support bash scripts.
+Shell currently does not support bash scripts due to the unstable nature of the shell.
 
 kitty! cats!
 
@@ -19,6 +19,8 @@ kitty! cats!
 This piece of ***almost*** useless software includes a pretty straight-forward and beginner friendly method of building, make. You could choose the hard way and build manually, but you will have to figure it out yourself, i am not providing any tutorials for manual building.
 
 For build instructions, visit the wiki. All instructions will be removed from the readme soon and moved to the wiki.
+
+<h3>Linux:</h3>
 
 Arch Linux:
 ``
@@ -36,7 +38,7 @@ We currently do not offer instructions for MacOS
 
 <h2>Structure:</h2>
 
-krnel/<br>
+kTTY/<br>
 ├── kernel/<br>
 │ ├── ata.c<br>
 │ ├── kernel.c<br>
