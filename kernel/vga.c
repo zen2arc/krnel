@@ -1,8 +1,5 @@
 #include "kernel.h"
 
-#define VIDEO_MEMORY 0xB8000
-#define SCREEN_WIDTH 80
-#define SCREEN_HEIGHT 25
 #define ATTRIBUTE 0x0F
 
 static int cursor_x = 0;
@@ -34,13 +31,17 @@ void putchar(char c, u8 color) {
     if (c == '\n') {
         cursor_x = 0;
         cursor_y++;
-    } else if (c == '\b') {
+    }
+    else if (c == '\b') {
         if (cursor_x > 0) {
             cursor_x--;
-            video[cursor_y * SCREEN_WIDTH + cursor_x] = (color << 8) | ' ';
+            video[cursor_y * SCREEN_WIDTH + cursor_x] =
+                (color << 8) | ' ';
         }
-    } else if (c >= 32 && c <= 126) {
-        video[cursor_y * SCREEN_WIDTH + cursor_x] = (color << 8) | c;
+    }
+    else if (c >= 32 && c <= 126) {
+        video[cursor_y * SCREEN_WIDTH + cursor_x] =
+            (color << 8) | c;
         cursor_x++;
     }
 
@@ -55,7 +56,8 @@ void putchar(char c, u8 color) {
         }
 
         for (int i = 0; i < SCREEN_WIDTH; i++) {
-            video[(SCREEN_HEIGHT - 1) * SCREEN_WIDTH + i] = (ATTRIBUTE << 8) | ' ';
+            video[(SCREEN_HEIGHT - 1) * SCREEN_WIDTH + i] =
+                (ATTRIBUTE << 8) | ' ';
         }
 
         cursor_y = SCREEN_HEIGHT - 1;
@@ -66,7 +68,6 @@ void putchar(char c, u8 color) {
 
 void vga_write(const char* str, u8 color) {
     if (!str) return;
-
     while (*str) {
         putchar(*str++, color);
     }

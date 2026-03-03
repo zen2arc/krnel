@@ -33,6 +33,8 @@ C_SOURCES = $(SRC)/kernel.c \
             $(SRC)/syscall.c \
             $(SRC)/plugin.c \
             $(SRC)/stackcheck.c \
+            $(SRC)/vfs.c \
+            $(SRC)/tty.c \
             $(SRC)/sysfetch.c
 
 ASM_SOURCES = boot/boot.asm

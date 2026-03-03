@@ -18,6 +18,9 @@ typedef size_t usize;
 #define MAX_USERS 50
 #define MAX_USERNAME 32
 #define MAX_PASSWORD 32
+#define VIDEO_MEMORY  0xB8000
+#define SCREEN_WIDTH  80
+#define SCREEN_HEIGHT 25
 
 #define COLOUR_BLACK           0x00
 #define COLOUR_BLUE            0x01
@@ -58,7 +61,7 @@ static inline void khang() {
 /* ================ VGA functions ================ */
 void clear_screen(void);
 void vga_write(const char* str, u8 color);
-void vga_write_rgb(const char* str, u8 r, u8 g, u8 b);  // <- added
+void vga_write_rgb(const char* str, u8 r, u8 g, u8 b);
 void vga_set_pos(int x, int y);
 void vga_get_pos(int* x, int* y);
 void putchar(char c, u8 color);
@@ -218,5 +221,31 @@ extern u32 system_uptime;
 
 /* ================ System Info / Sysfetch ================ */
 void sysfetch_run(void);
+
+/* ================ VFS functions ================ */
+void vfs_init(void);
+int vfs_mkdir(const char* name);
+int vfs_create(const char* name, u8 type);
+int vfs_delete(const char* name);
+int vfs_list(char* buffer, usize size);
+int vfs_read(const char* name, char* buffer, usize size);
+int vfs_write(const char* name, const char* data, usize size);
+int vfs_chdir(const char* dir);
+const char* vfs_getcwd(void);
+int vfs_exists(const char* name);
+int vfs_size(const char* name);
+int vfs_type(const char* name);
+int vfs_create_home(const char* username);
+int vfs_mount_disk(void);
+
+/* ================ TTY functions ================ */
+#include "tty.h"
+#define KEY_LEFT -30
+#define KEY_RIGHT -31
+#define KEY_UP -32
+#define KEY_DOWN -33
+#define KEY_DELETE -34
+#define KEY_HOME -35
+#define KEY_END -36
 
 #endif /* KERNEL_H */

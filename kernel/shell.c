@@ -1,4 +1,5 @@
 #include "kernel.h"
+#include "shell.h"
 
 #define MAX_ARGS 20
 #define MAX_ALIASES 20
@@ -17,6 +18,20 @@ static int alias_count = 0;
 // login state
 static int logged_in = 0;
 static char line[BUFFER_SIZE];
+
+// prompt yay
+static void prompt(void);
+
+int shell_logged_in(void) {
+    return logged_in;
+}
+
+// make shell_prompt_redraw non-static as well
+void shell_prompt_redraw(void) {
+    if (!logged_in) return;
+    vga_write("\n", 0x0F);
+    prompt();
+}
 
 // read a single character from keyboard
 static char read_char(void) {
@@ -99,7 +114,7 @@ static void login_prompt(void) {
     int attempts = 0;
 
     while (attempts < 3) {
-        vga_write("kTTY 1.0.0rc2 tty1\n", 0x0F);
+        vga_write("kTTY 1.0.0\n", 0x0F);
         vga_write("login: ", 0x0F);
         read_string(username, MAX_USERNAME, 1);
         vga_write("password: ", 0x0F);

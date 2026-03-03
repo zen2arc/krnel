@@ -13,10 +13,15 @@ void kmain(unsigned int magic, unsigned int mb_info_addr) {
     fs_init();
     vga_write("filesystem initialized\n", 0x0A);
 
+    vfs_init();
+    vga_write("vfs layer ready\n", 0x0A);
+
     user_init();
     vga_write("user system initialized\n", 0x0A);
 
     shell_init();
+
+    tty_init();
 
     vga_write("welcome to krnel!\n", 0x0F);
 
