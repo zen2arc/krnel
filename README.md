@@ -54,7 +54,10 @@ kTTY/<br>
 │ ├── vga.c<br>
 │ ├── stackcheck.c<br>
 │ ├── sysfetch.c<br>
+│ ├── string.c<br>
 │ ├── user.c<br>
+│ ├── vfs.c<br>
+│ ├── tty.c<br>
 ├── boot/<br>
 │ ├── boot.asm<br>
 │ ├── linker.ld<br>
@@ -64,6 +67,8 @@ kTTY/<br>
 │ ├── ext2_private.h<br>
 │ ├── kernel.h<br>
 │ └── plugin.h<br>
+│ └── vfs.h<br>
+│ └── tty.h<br>
 ├── Makefile<br>
 └── grub.cfg<br>
 
