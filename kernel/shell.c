@@ -83,7 +83,7 @@ static void login_prompt(void) {
         char tnum[4]; itoa(current_tty + 1, tnum); vga_write(tnum, COLOUR_DARK_GRAY);
         vga_write("\n\n", COLOUR_WHITE);
         vga_write("kTTY login: ", COLOUR_WHITE); read_string(username, MAX_USERNAME, 1);
-        vga_write("Password:   ", COLOUR_WHITE); read_string(password, MAX_PASSWORD, 0);
+        vga_write("Password: ", COLOUR_WHITE); read_string(password, MAX_PASSWORD, 0);
         if (user_login(username, password) == 0) {
             vga_write("\nLogin successful!\n", COLOUR_LIGHT_GREEN);
             logged_in = 1; clear_screen(); return;
@@ -173,6 +173,56 @@ static void cmd_echo(void) {
     for (int i=1;i<arg_count;i++) { vga_write(args[i],COLOUR_WHITE); if(i<arg_count-1) vga_write(" ",COLOUR_WHITE); }
     vga_write("\n",COLOUR_WHITE);
 }
+static void cmd_exec_script(const char* path) {
+    char real_path[128];
+    if (path[0] == '.' && path[1] == '/') {
+        snprintf(real_path, sizeof(real_path), "/%s", path + 2);
+    } else {
+        strncpy(real_path, path, sizeof(real_path)-1);
+        real_path[sizeof(real_path)-1] = '\0';
+    }
+
+    char buf[4096];
+    int sz = fs_read(real_path, buf, sizeof(buf)-1);
+    if (sz <= 0) {
+        vga_write("Error: Script not found or empty\n", COLOUR_LIGHT_RED);
+        return;
+    }
+    buf[sz] = '\0';
+
+    char* p = buf;
+    while (*p) {
+        /* skip leading whitespace / \r */
+        while (*p == ' ' || *p == '\t' || *p == '\r') p++;
+        if (*p == '\0') break;
+
+        /* skip comments and blank lines */
+        if (*p == '#' || *p == '\n') {
+            while (*p && *p != '\n') p++;
+            if (*p == '\n') p++;
+            continue;
+        }
+
+        /* extract one full line */
+        char line[256];
+        int i = 0;
+        while (*p && *p != '\n' && i < 255) {
+            line[i++] = *p++;
+        }
+        line[i] = '\0';
+
+        /* trim trailing whitespace / \r */
+        while (i > 0 && (line[i-1] == ' ' || line[i-1] == '\t' || line[i-1] == '\r')) {
+            line[--i] = '\0';
+        }
+
+        if (i > 0) {
+            execute_command(line);
+        }
+
+        if (*p == '\n') p++;
+    }
+}
 static void cmd_help(void) {
     vga_write("kTTY " KTTY_VERSION " built-in commands:\n",           COLOUR_YELLOW);
     vga_write("  Navigation : cd [dir]  ls  pwd\n",                    COLOUR_WHITE);
@@ -181,7 +231,7 @@ static void cmd_help(void) {
     vga_write("  System     : ps  sysfetch  uname  hostname\n",        COLOUR_WHITE);
     vga_write("  Users      : whoami  useradd  userdel\n",             COLOUR_WHITE);
     vga_write("  Shell      : history  alias  clear  help\n",          COLOUR_WHITE);
-    vga_write("  Session    : exit  logout\n",                          COLOUR_WHITE);
+    vga_write("  Session    : exit  logout ./script.sh\n",                          COLOUR_WHITE);
     vga_write("  Arrow Up/Down: history | Left/Right/Home/End: cursor\n", COLOUR_DARK_GRAY);
 }
 static void cmd_uname(void) {
@@ -209,18 +259,19 @@ void execute_command(char* line) {
     if (arg_count==0) return;
     const char* cmd=args[0];
 
-    if      (strcmp(cmd,"cd")==0)         cmd_cd(arg_count>1?args[1]:NULL);
-    else if (strcmp(cmd,"ls")==0)         cmd_ls();
-    else if (strcmp(cmd,"cat")==0)        cmd_cat(args[1]);
-    else if (strcmp(cmd,"touch")==0)      cmd_touch(args[1]);
-    else if (strcmp(cmd,"rm")==0)         cmd_rm(args[1]);
-    else if (strcmp(cmd,"mkdir")==0)      cmd_mkdir(args[1]);
-    else if (strcmp(cmd,"echo")==0)       cmd_echo();
-    else if (strcmp(cmd,"clear")==0)      clear_screen();
-    else if (strcmp(cmd,"help")==0)       cmd_help();
-    else if (strcmp(cmd,"history")==0)    history_show();
-    else if (strcmp(cmd,"uname")==0)      cmd_uname();
-    else if (strcmp(cmd,"hostname")==0)   cmd_hostname();
+    if      (strcmp(cmd,"cd")==0) cmd_cd(arg_count>1?args[1]:NULL);
+    else if (strcmp(cmd,"ls")==0) cmd_ls();
+    else if (strcmp(cmd,"cat")==0) cmd_cat(args[1]);
+    else if (strcmp(cmd,"touch")==0) cmd_touch(args[1]);
+    else if (strcmp(cmd,"rm")==0) cmd_rm(args[1]);
+    else if (strcmp(cmd,"mkdir")==0) cmd_mkdir(args[1]);
+    else if (strcmp(cmd,"echo")==0) cmd_echo();
+    else if (strcmp(cmd,"clear")==0) clear_screen();
+    else if (strcmp(cmd,"help")==0) cmd_help();
+    else if (strcmp(cmd,"history")==0) history_show();
+    else if (strcmp(cmd,"uname")==0) cmd_uname();
+    else if (strcmp(cmd,"hostname")==0) cmd_hostname();
+    else if (fs_exists(cmd)) cmd_exec_script(cmd);
     else if (strcmp(cmd,"alias")==0) {
         if (arg_count==1) list_aliases();
         else if (arg_count>=3) add_alias(args[1],args[2]);
@@ -235,7 +286,7 @@ void execute_command(char* line) {
         else kittywrite(args[1]);
     }
     else if (strcmp(cmd,"useradd")==0) {
-        if (arg_count<3)          vga_write("Usage: useradd <user> <pass>\n",COLOUR_LIGHT_RED);
+        if (arg_count<3) vga_write("Usage: useradd <user> <pass>\n",COLOUR_LIGHT_RED);
         else if (!user_is_root()) vga_write("Permission denied.\n",COLOUR_LIGHT_RED);
         else if (user_add(args[1],args[2],0)==0) vga_write("User added.\n",COLOUR_LIGHT_GREEN);
         else vga_write("useradd: failed.\n",COLOUR_LIGHT_RED);
