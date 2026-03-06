@@ -18,7 +18,7 @@ static void init_write_sysfiles(void) {
 
     /* /etc/hostname */
     if (!fs_exists("/etc/hostname")) {
-        const char* hostname = "ktty\n";
+        const char* hostname = "ktty";
         fs_write("/etc/hostname", hostname, strlen(hostname));
     }
 
@@ -34,15 +34,6 @@ static void init_write_sysfiles(void) {
     if (!fs_exists("/etc/shells")) {
         const char* shells = "/bin/ash\n/bin/sh\n";
         fs_write("/etc/shells", shells, strlen(shells));
-    }
-}
-
-static void print_motd(void) {
-    char buf[512];
-    int sz = fs_read("/etc/motd", buf, sizeof(buf) - 1);
-    if (sz > 0) {
-        buf[sz] = '\0';
-        vga_write(buf, COLOUR_LIGHT_CYAN);
     }
 }
 
@@ -85,8 +76,6 @@ void kmain(unsigned int magic, unsigned int mb_info_addr) {
               COLOUR_LIGHT_GREEN);
 
     shell_init();
-
-    print_motd();
 
     shell_run();
 

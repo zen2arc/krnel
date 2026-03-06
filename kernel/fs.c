@@ -98,7 +98,7 @@ void fs_init(void) {
     /* ---- standard UNIX directory tree ---- */
     static const char* std_dirs[] = {
         /* base dirs */
-        "bin", "sbin", "lib", "lib64",
+        "bin", "sbin", "lib", "dev",
         "usr", "usr/bin", "usr/sbin", "usr/lib", "usr/include", "usr/share",
         "etc", "etc/init.d",
         "home",
@@ -140,8 +140,11 @@ int fs_create(const char* name, u8 type) {
 }
 
 int fs_delete(const char* name) {
-    if (!fs) return -1;
-    return ext2_unlink(fs, cwd_inode, name);
+    if (!fs || !name || !*name) return -1;
+    char basename[64];
+    int parent = fs_get_parent(name, basename);
+    if (parent < 0 || !basename[0]) return -1;
+    return ext2_unlink(fs, (u32)parent, basename);
 }
 
 int fs_list(char* buffer, usize size) {
@@ -294,3 +297,50 @@ int fs_create_home(const char* username) {
 }
 
 int fs_mount_disk(void) { return 0; }
+
+int fs_chmod(const char* name, u16 mode) {
+    if (!fs) return -1;
+    int inode_num = fs_resolve_inode(name);
+    if (inode_num < 0) return -1;
+    ext2_inode_t inode;
+    if (ext2_read_inode(fs, (u32)inode_num, &inode) < 0) return -1;
+    /* preserve file-type bits (top 4), replace permission bits (low 12) */
+    inode.mode = (inode.mode & 0xF000) | (mode & 0x0FFF);
+    return ext2_write_inode(fs, (u32)inode_num, &inode);
+}
+
+int fs_is_executable(const char* name) {
+    if (!fs) return 0;
+    int inode_num = fs_resolve_inode(name);
+    if (inode_num < 0) return 0;
+    ext2_inode_t inode;
+    if (ext2_read_inode(fs, (u32)inode_num, &inode) < 0) return 0;
+    return (inode.mode & 0111) ? 1 : 0;
+}
+
+int fs_get_inode(const char* path) {
+    return fs_resolve_inode(path);
+}
+
+int fs_read_inode(int inode_num, char* buf, usize size) {
+    if (!fs || inode_num < 0) return -1;
+    ext2_inode_t inode;
+    if (ext2_read_inode(fs, (u32)inode_num, &inode) < 0) return -1;
+    return ext2_read_file(fs, &inode, 0, (u32)size, buf);
+}
+
+int fs_write_inode(int inode_num, const char* buf, usize size) {
+    if (!fs || inode_num < 0) return -1;
+    ext2_inode_t inode;
+    if (ext2_read_inode(fs, (u32)inode_num, &inode) < 0) return -1;
+    int r = ext2_write_file(fs, &inode, 0, (u32)size, buf);
+    if (r < 0) return -1;
+    return ext2_write_inode(fs, (u32)inode_num, &inode);
+}
+
+int fs_size_inode(int inode_num) {
+    if (!fs || inode_num < 0) return -1;
+    ext2_inode_t inode;
+    if (ext2_read_inode(fs, (u32)inode_num, &inode) < 0) return -1;
+    return (int)inode.size;
+}

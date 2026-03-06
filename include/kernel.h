@@ -113,11 +113,24 @@ char**  strsplit(const char* str, const char* delim, int* count);
 void    strfree(char** array);
 int     atoi(const char* str);
 
-/* ==================== keyboard ===================== */
-int read_key(void);
-int key_available(void);
-int get_shift_state(void);
-int get_caps_state(void);
+/* =================== file descriptors ====================== */
+typedef struct { u32 st_ino; u16 st_mode; u32 st_size; u32 st_blksize; } kstat_t;
+void fd_init(void);
+int  fd_open(const char* path, int flags);
+int  fd_close(int fd);
+int  fd_read(int fd, void* buf, usize count);
+int  fd_write(int fd, const void* buf, usize count);
+int  fd_seek(int fd, int offset, int whence);
+int  fd_fstat(int fd, kstat_t* st);
+
+/* ====================== syscalls =========================== */
+void syscall_init(void);
+int  syscall_dispatch(u32 num, u32 a, u32 b, u32 c, u32 d, u32 e);
+void keyboard_init(void);
+int  read_key(void);
+int  key_available(void);
+int  get_shift_state(void);
+int  get_caps_state(void);
 int get_ctrl_state(void);
 int get_alt_state(void);
 
@@ -156,6 +169,12 @@ int         fs_type(const char* name);
 int         fs_mkdir(const char* name);
 int         fs_create_home(const char* username);
 int         fs_mount_disk(void);
+int         fs_chmod(const char* name, u16 mode);
+int         fs_is_executable(const char* name);
+int         fs_get_inode(const char* path);
+int         fs_read_inode(int inode_num, char* buf, usize size);
+int         fs_write_inode(int inode_num, const char* buf, usize size);
+int         fs_size_inode(int inode_num);
 
 /* ==================== shell ======================== */
 void shell_init(void);
@@ -175,6 +194,7 @@ typedef struct {
     u32  uid;
     u32  gid;
     u8   is_root;
+    u8   in_sudo;           /* member of the sudo group */
     char home[MAX_USERNAME + 8];
     char shell[32];
 } user_t;
@@ -187,6 +207,12 @@ int         user_del(const char* username);
 void        user_current(char* username, usize size);
 u32         user_get_uid(void);
 u8          user_is_root(void);
+int         user_is_sudo(void);
+int         users_real_is_root(void);
+int         user_check_password(const char* password);
+void        user_sudo_elevate(void);
+void        user_sudo_drop(void);
+int         user_add_sudo(const char* username);
 const char* user_get_name(void);
 const char* user_get_home(void);
 int         user_first_boot(void);
@@ -206,7 +232,7 @@ void timer_handler(void);
 u64  syscall(u64 num, u64 a1, u64 a2, u64 a3, u64 a4, u64 a5);
 void kprint(const char* str);
 
-/* ================== kittywrite ===================== */
+/* ==================== editor ======================= */
 void kittywrite(const char* filename);
 
 /* ==================== I/O ========================== */
